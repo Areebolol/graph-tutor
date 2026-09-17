@@ -1,0 +1,64 @@
+/* GraphTutor 视觉基线：暖雾杏底 + 柔和蓝 */
+
+:root {
+  --font-sans: 'DM Sans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  --color-primary: #4a7cc9;
+  --color-primary-hover: #5b8ad4;
+  --color-primary-deep: #3d6eb5;
+  --color-primary-light: #e9eef6;
+  --color-accent: #4f8f84;
+
+  --color-success: #2f9e7a;
+  --color-success-light: #e6f5ef;
+  --color-warning: #c48a2a;
+  --color-warning-light: #f8efd9;
+  --color-error: #d45555;
+  --color-error-light: #f8eaea;
+
+  --color-text-primary: #2a3444;
+  --color-text-secondary: #5f6b7a;
+  --color-text-tertiary: #8e97a3;
+
+  --color-bg-primary: #fffbf7;
+  --color-bg-secondary: #f3ebe3;
+  --color-bg-tertiary: #e8dfd5;
+  --color-bg-page: #f3e9df;
+  --color-cta: #3a4658;
+
+  --color-border: #e5dbd1;
+  --color-border-hover: #d4c8bb;
+
+  --radius-card: 0.875rem;
+  --shadow-soft: 0 1px 2px rgb(58 52 45 / 0.05);
+}
+
+.dark {
+  --color-primary: #7ba3e0;
+  --color-primary-hover: #97b8e8;
+  --color-primary-deep: #5b8ad4;
+  --color-primary-light: #243044;
+  --color-accent: #5aabb8;
+
+  --color-success: #4db896;
+  --color-success-light: #1a2e28;
+  --color-warning: #d4a84b;
+  --color-warning-light: #2e2818;
+  --color-error: #e07a7a;
+  --color-error-light: #2e1e1e;
+
+  --color-text-primary: #e8e4df;
+  --color-text-secondary: #b0a9a0;
+  --color-text-tertiary: #857e76;
+
+  --color-bg-primary: #1c2228;
+  --color-bg-secondary: #262d34;
+  --color-bg-tertiary: #323a43;
+  --color-bg-page: #151a1f;
+  --color-cta: #2a3444;
+
+  --color-border: #323a43;
+  --color-border-hover: #424a54;
+
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.28);
+}
