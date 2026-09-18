@@ -643,6 +643,15 @@ export function persistDemoState() {
   }
 }
 
+export function applyAuthProfile({ name, email } = {}) {
+  const s = getDemoState()
+  if (!s.profile) return s.profile
+  if (name) s.profile.name = name
+  if (email) s.profile.email = email
+  persistDemoState()
+  return s.profile
+}
+
 export function resetDemoState() {
   state = buildFreshState()
   persistDemoState()

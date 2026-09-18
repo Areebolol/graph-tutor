@@ -142,7 +142,22 @@ function handle(config) {
   if (key === 'PUT /auth/me') {
     Object.assign(state.profile, body)
     save()
+    if (body?.name) {
+      import('../utils/localAuth.js').then((m) =>
+        m.updateLocalAccountProfile(state.profile.email, { name: body.name }),
+      )
+    }
     return { success: true, user: state.profile, data: state.profile }
+  }
+  if (key === 'PUT /auth/me/password') {
+    return import('../utils/localAuth.js').then(async (m) => {
+      try {
+        await m.changeLocalPassword(me().email, body.oldPassword, body.newPassword)
+        return { success: true, message: '密码已更新' }
+      } catch (e) {
+        return { success: false, message: e?.message || '修改密码失败' }
+      }
+    })
   }
 
   if (key === 'GET /v3/subjects' || key === 'GET /v3/subjects/') {
@@ -1162,25 +1177,21 @@ function handle(config) {
 }
 
 export function demoAdapter(config) {
-  return new Promise((resolve, reject) => {
-    try {
-      const data = handle(config)
+  return Promise.resolve()
+    .then(() => handle(config))
+    .then((data) => {
       if (data && data.success === false) {
         const error = new Error(data.message || '演示请求失败')
         error.response = { status: 400, data, config }
-        reject(error)
-        return
+        throw error
       }
-      resolve({
+      return {
         data,
         status: 200,
         statusText: 'OK',
         headers: { 'content-type': 'application/json' },
         config,
         request: { demo: true },
-      })
-    } catch (err) {
-      reject(err)
-    }
-  })
+      }
+    })
 }

@@ -13,7 +13,7 @@
       <div class="surface space-y-6">
         <div>
           <h1 class="text-xl font-semibold tracking-tight" style="color: var(--color-text-primary)">登录</h1>
-          <p class="mt-1 text-sm" style="color: var(--color-text-secondary)">使用邮箱、演示登录，或 GitHub 演示入口</p>
+          <p class="mt-1 text-sm" style="color: var(--color-text-secondary)">使用邮箱登录，或一键进入演示账号</p>
         </div>
 
         <div
@@ -65,6 +65,14 @@
             {{ busy ? '登录中…' : '登录' }}
           </button>
         </form>
+
+        <p class="text-xs leading-5" style="color: var(--color-text-tertiary)">
+          没有账号请先注册。也可以用演示账号
+          <span class="font-medium" style="color: var(--color-text-secondary)">demo@graphtutor.local</span>
+          ／
+          <span class="font-medium" style="color: var(--color-text-secondary)">demo1234</span>
+          登录。
+        </p>
 
         <button
           type="button"
@@ -136,7 +144,7 @@ async function handleGitHubLogin() {
   githubBusy.value = true
   err.value = ''
   try {
-    auth.loginAsDemo('admin')
+    await auth.loginAsDemo('admin')
     toast('纯前端项目不跳转真实 GitHub，已用演示账号进入', 'info')
     goAfterLogin()
   } catch (e) {
@@ -150,7 +158,7 @@ async function submitDemo() {
   err.value = ''
   demoBusy.value = true
   try {
-    auth.loginAsDemo('admin')
+    await auth.loginAsDemo('admin')
     goAfterLogin()
   } catch (e) {
     err.value = e?.message || '演示登录失败'
@@ -175,15 +183,7 @@ async function submit() {
     await auth.login(email.value, password.value)
     goAfterLogin()
   } catch (e) {
-    const offline =
-      e?.response?.status === 503 ||
-      e?.code === 'ERR_NETWORK' ||
-      /后端|ECONNREFUSED|Network Error/i.test(String(e?.message || ''))
-    if (offline) {
-      err.value = '当前是纯前端项目，邮箱登录不可用。请使用「演示登录」。'
-    } else {
-      err.value = e?.message || '登录失败，请检查邮箱和密码'
-    }
+    err.value = e?.message || '登录失败，请检查邮箱和密码'
   } finally {
     busy.value = false
   }

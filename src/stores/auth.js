@@ -17,6 +17,17 @@ import {
   isDemoMode,
   isDemoToken,
 } from '../utils/demoAuth'
+import {
+  clearLocalSession,
+  ensureDemoAccount,
+  findAccountByEmail,
+  getLocalSession,
+  loginLocalAccount,
+  registerLocalAccount,
+  setLocalSession,
+  toAuthUser,
+} from '../utils/localAuth'
+import { applyAuthProfile } from '../demo/store'
 
 function extractLoginPayload(resData) {
   const body = resData || {}
@@ -84,10 +95,15 @@ export const useAuthStore = defineStore('auth', () => {
 
     if (isDemoToken(t) || isDemoMode()) {
       enableDemoMode()
-      setStoredToken(DEMO_TOKEN)
-      token.value = DEMO_TOKEN
-      user.value = { ...DEMO_USER }
+      const session = getLocalSession()
+      const account = session?.email ? findAccountByEmail(session.email) : null
+      const u = account ? toAuthUser(account) : { ...DEMO_USER }
+      const nextToken = account ? `gt_demo_token_${account.id}` : DEMO_TOKEN
+      setStoredToken(nextToken)
+      token.value = nextToken
+      user.value = u
       demoMode.value = true
+      applyAuthProfile({ name: u.name, email: u.email })
       loading.value = false
       return
     }
@@ -121,27 +137,33 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  async function login(email, password) {
-    const res = await api.post('/auth/login', { email, password })
-    if (res.data?.success === false) {
-      throw new Error(res.data?.message || '登录失败')
+  function enterLocalUser(account, role = 'admin') {
+    const u = {
+      ...toAuthUser(account),
+      role,
+      isAdmin: role === 'admin',
     }
-
-    const { token: t, refreshToken: rt, user: u } = extractLoginPayload(res.data)
-    if (!t || !u) {
-      throw new Error(res.data?.message || '登录接口返回格式不符合预期，需要包含 token 和 user。')
-    }
-
-    disableDemoMode()
+    enableDemoMode()
+    const t = `gt_demo_token_${account.id}`
     setStoredToken(t)
-    if (rt) setStoredRefreshToken(rt)
+    setStoredRefreshToken(null)
+    setLocalSession(account)
+    applyAuthProfile({ name: u.name, email: u.email })
     token.value = t
     user.value = u
-    demoMode.value = false
+    demoMode.value = true
     return u
   }
 
-  function loginAsDemo(role = 'admin') {
+  async function login(email, password) {
+    const account = await loginLocalAccount(email, password)
+    return enterLocalUser(account)
+  }
+
+  async function loginAsDemo(role = 'admin') {
+    await ensureDemoAccount()
+    const account = findAccountByEmail(DEMO_USER.email)
+    if (account) return enterLocalUser(account, role)
     const session = getDemoSession()
     const u = {
       ...session.user,
@@ -154,6 +176,7 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = session.token
     user.value = u
     demoMode.value = true
+    applyAuthProfile({ name: u.name, email: u.email })
     return u
   }
 
@@ -171,17 +194,12 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function register(payload) {
-    const res = await api.post('/auth/register', payload)
-    const { token: t, refreshToken: rt, user: u } = extractLoginPayload(res.data)
-    if (t && u) {
-      disableDemoMode()
-      setStoredToken(t)
-      if (rt) setStoredRefreshToken(rt)
-      token.value = t
-      user.value = u
-      demoMode.value = false
-    }
-    return u
+    const account = await registerLocalAccount({
+      email: payload.email,
+      password: payload.password,
+      name: payload.name || payload.nickname,
+    })
+    return enterLocalUser(account)
   }
 
   async function logout() {
@@ -195,6 +213,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
     }
     disableDemoMode()
+    clearLocalSession()
     clearAllTokens()
     token.value = null
     user.value = null
