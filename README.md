@@ -11,14 +11,16 @@
 
 ## 启动
 
+**在线演示：** https://areebolol.github.io/graph-tutor/
+
+本地运行：
+
 ```bash
 npm install
 npm run dev
 ```
 
-浏览器打开：http://localhost:5174
-
-登录页点 **演示登录**，即可浏览练习、题库、群组、商城等全部页面。
+浏览器打开终端提示的地址（一般为 http://localhost:5174），点 **演示登录** 即可浏览全部页面。
 
 ## 功能
 

@@ -4,7 +4,7 @@ import { useAuthStore } from '../stores/auth'
 const managerRoles = ['admin', 'question_manager']
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/login',
