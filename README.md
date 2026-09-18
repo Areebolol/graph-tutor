@@ -1,6 +1,6 @@
 # GraphTutor Vue
 
-纯前端 Vue 3 项目，从 GraphTutor React 版迁移而来。**不需要启动后端**：演示登录会载入内置数据，改动保存在浏览器 `localStorage`。
+纯前端 Vue 3 项目：演示登录会载入内置数据，改动保存在浏览器 `localStorage`。
 
 ## 技术栈
 
@@ -12,7 +12,6 @@
 ## 启动
 
 ```bash
-cd C:\Users\tian\Desktop\新建文件夹
 npm install
 npm run dev
 ```
